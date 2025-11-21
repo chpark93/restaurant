@@ -1,5 +1,6 @@
 package com.chpark.restaurant.member.infrastructure.persistence
 
+import com.chpark.restaurant.member.domain.Email
 import com.chpark.restaurant.member.domain.Member
 import com.chpark.restaurant.member.domain.port.MemberRepository
 import org.springframework.stereotype.Component
@@ -10,20 +11,32 @@ class MemberRepositoryAdapter(
 ) : MemberRepository {
 
     override suspend fun existsByEmail(
-        email: String
+        email: Email
     ): Boolean = memberR2dbcRepository.existsByEmail(
-        email = email
+        email = email.value
     )
 
     override suspend fun findByEmail(
-        email: String
+        email: Email
     ): Member? = memberR2dbcRepository.findByEmail(
-        email = email
-    )
+        email = email.value
+    )?.let { entity ->
+        MemberMapper.toDomain(
+            entity = entity
+        )
+    }
 
     override suspend fun save(
         member: Member
-    ): Member = memberR2dbcRepository.save(
-        entity = member
-    )
+    ): Member {
+        val savedMember = memberR2dbcRepository.save(
+            entity = MemberMapper.toEntity(
+                domain = member
+            )
+        )
+
+        return MemberMapper.toDomain(
+            entity = savedMember
+        )
+    }
 }

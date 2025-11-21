@@ -1,13 +1,18 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   application:
     name: restaurant-service
   r2dbc:
-    url: r2dbc:h2:ch:///restaurant;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
+    url: r2dbc:postgresql://localhost:5432/restaurant
+    username: chpark
+    password: 1234
+  datasource:
+    url: jdbc:postgresql://localhost:5432/restaurant
+    username: chpark
+    password: 1234
+    driver-class-name: org.postgresql.Driver
   h2:
     console:
       enabled: true
@@ -20,7 +25,13 @@ spring:
     init:
       mode: always
       schema-locations: classpath:schema.sql
-      data-locations: classpath:data.sql
+      # data-locations: classpath:data.sql
+  flyway:
+    enabled: false
+    url: jdbc:postgresql://localhost:5432/restaurant
+    user: chpark
+    password: 1234
+    locations: classpath:db/migration
   main:
     web-application-type: reactive
 
@@ -28,7 +39,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health, info
   endpoint:
     health:
       show-details: always
@@ -36,7 +47,7 @@ management:
 app:
   jwt:
     secret: "ZmFrZV9zZWNyZXRfc2VjcmV0X2tleV9mb3JfY2RyaV9wcm9qZWN0XzEyMzQ1Njc4OTA="
-    issuer: "ch-project"
+    issuer: "restaurant-service"
     access-token-ttl: 1800
     refresh-token-ttl: 604800
 

@@ -4,6 +4,8 @@ import com.chpark.restaurant.auth.application.AuthService
 import com.chpark.restaurant.auth.application.dto.LoginCommand
 import com.chpark.restaurant.auth.application.dto.RegisterCommand
 import com.chpark.restaurant.auth.application.dto.TokenResult
+import com.chpark.restaurant.common.exception.BusinessException
+import com.chpark.restaurant.common.exception.ErrorCode
 import com.chpark.restaurant.common.response.ApiResponse
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -30,7 +32,7 @@ class AuthHandler(
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(
                 ApiResponse.ok(
-                    data = mapOf("id" to result)
+                    data = mapOf("email" to result)
                 )
             )
     }
@@ -40,7 +42,9 @@ class AuthHandler(
     ): ServerResponse {
         val command: LoginCommand = request.awaitBody()
 
-        val result: TokenResult = authService.login(command)
+        val result: TokenResult = authService.login(
+            command = command
+        )
 
         return ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
@@ -56,8 +60,10 @@ class AuthHandler(
     ): ServerResponse {
         val body = request.awaitBody<Map<String, String>>()
         val refreshToken = body["refreshToken"]
-            ?: return ServerResponse.badRequest()
-                .bodyValueAndAwait(ApiResponse.fail("C001", "refreshToken is required"))
+
+        if (refreshToken.isNullOrBlank()) {
+            throw BusinessException(ErrorCode.COMMON_INVALID)
+        }
 
         val result = authService.reissue(
             refreshToken = refreshToken
@@ -80,11 +86,7 @@ class AuthHandler(
         val refreshToken = body["refreshToken"]
 
         if (accessToken.isNullOrBlank()) {
-            return ServerResponse.badRequest()
-                .bodyValueAndAwait(
-                    body = ApiResponse.fail(
-                        code = "C001", "accessToken is required")
-                )
+            throw BusinessException(ErrorCode.COMMON_INVALID)
         }
 
         authService.logout(

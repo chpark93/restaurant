@@ -1,14 +1,15 @@
 package com.chpark.restaurant.member.domain.port
 
+import com.chpark.restaurant.member.domain.Email
 import com.chpark.restaurant.member.domain.Member
 
 interface MemberRepository {
     suspend fun existsByEmail(
-        email: String
+        email: Email
     ): Boolean
 
     suspend fun findByEmail(
-        email: String
+        email: Email
     ): Member?
 
     suspend fun save(

@@ -39,14 +39,19 @@ class TokenService(
             refreshToken = refreshToken
         )
 
-        return TokenResult(accessToken, refreshToken)
+        return TokenResult(
+            accessToken = accessToken,
+            refreshToken = refreshToken
+        )
     }
 
     @Transactional
     suspend fun reissueToken(
         refreshToken: String
     ): TokenResult {
-        val claims = tokenParser.parse(refreshToken)
+        val claims = tokenParser.parse(
+            token = refreshToken
+        )
 
         if (claims.tokenType != AuthTokenClaims.TokenType.REFRESH_TOKEN) {
             throw BusinessException(ErrorCode.INVALID_REFRESH_TOKEN)
@@ -92,10 +97,15 @@ class TokenService(
         accessToken: String,
         refreshToken: String?
     ) {
-        tokenBlacklistStore.blacklist(accessToken)
+        tokenBlacklistStore.blacklist(
+            accessToken = accessToken
+        )
 
         if (!refreshToken.isNullOrBlank()) {
-            val claims = tokenParser.parse(refreshToken)
+            val claims = tokenParser.parse(
+                token = refreshToken
+            )
+
             refreshTokenStore.delete(
                 userId = claims.subject,
                 refreshToken = refreshToken

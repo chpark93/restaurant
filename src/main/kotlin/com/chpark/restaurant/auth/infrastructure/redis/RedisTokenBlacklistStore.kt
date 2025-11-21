@@ -11,19 +11,22 @@ class RedisTokenBlacklistStore(
     private val redisTemplate: ReactiveStringRedisTemplate
 ) : TokenBlacklistStore {
 
-    private val ops = redisTemplate.opsForValue()
+    private val opsForValueRedis = redisTemplate.opsForValue()
     private val ttl: Duration = Duration.ofMinutes(30)
 
-    private fun key(
-        accessToken: String
-    ): String = "auth:blacklist:${accessToken.hashCode()}"
+    companion object {
+        private const val KEY_PREFIX = "auth:blacklist"
+        private const val VALUE_BLACK_LIST = "BLACK"
+    }
 
     override suspend fun blacklist(
         accessToken: String
     ) {
-        ops.set(
-            key(accessToken = accessToken),
-            "1",
+        opsForValueRedis.set(
+            key(
+                accessToken = accessToken
+            ),
+            VALUE_BLACK_LIST,
             ttl
         ).awaitFirstOrNull()
     }
@@ -36,4 +39,8 @@ class RedisTokenBlacklistStore(
                 accessToken = accessToken
             )
         ).awaitFirstOrNull() ?: false
+
+    private fun key(
+        accessToken: String
+    ): String = "${KEY_PREFIX}:$accessToken"
 }

@@ -1,8 +1,8 @@
 package com.chpark.restaurant.reservation.presentation
 
+import com.chpark.restaurant.common.router.commonRoutes
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.reactive.function.server.coRouter
 
 @Configuration
 class ReservationRouter {
@@ -10,7 +10,7 @@ class ReservationRouter {
     @Bean
     fun reservationRoutes(
         reservationHandler: ReservationHandler
-    ) = coRouter {
+    ) = commonRoutes {
         "/api/reservations".nest {
             POST("", reservationHandler::createReservation)
             GET("/{id}", reservationHandler::getReservation)

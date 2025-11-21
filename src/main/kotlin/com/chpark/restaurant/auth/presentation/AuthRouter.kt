@@ -1,16 +1,15 @@
 package com.chpark.restaurant.auth.presentation
 
+import com.chpark.restaurant.common.router.commonRoutes
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.reactive.function.server.coRouter
 
 @Configuration
 class AuthRouter(
     private val authHandler: AuthHandler
 ) {
-
     @Bean
-    fun authRoutes() = coRouter {
+    fun authRoutes() = commonRoutes {
         "/api/auth".nest {
             POST("/register", authHandler::register)
             POST("/login", authHandler::login)

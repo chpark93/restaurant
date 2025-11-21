@@ -5,8 +5,8 @@ import com.chpark.restaurant.auth.application.dto.RegisterCommand
 import com.chpark.restaurant.auth.application.dto.TokenResult
 import com.chpark.restaurant.common.exception.BusinessException
 import com.chpark.restaurant.common.exception.ErrorCode
+import com.chpark.restaurant.member.domain.Email
 import com.chpark.restaurant.member.domain.Member
-import com.chpark.restaurant.member.domain.MemberRole
 import com.chpark.restaurant.member.domain.port.MemberRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
@@ -23,40 +23,41 @@ class AuthService(
     @Transactional
     suspend fun register(
         command: RegisterCommand
-    ): Long {
-        if (memberRepository.existsByEmail(command.email)) {
+    ): String {
+        if (memberRepository.existsByEmail(Email.of(rawEmail = command.email))) {
             throw BusinessException(ErrorCode.MEMBER_EMAIL_DUPLICATED)
         }
 
-        val encodedPassword = passwordEncoder.encode(command.password)
-
-        val member = Member(
-            email = command.email,
-            password = encodedPassword,
+        val member = Member.register(
+            email = Email.of(
+                rawEmail = command.email
+            ),
+            password = command.password,
             name = command.name,
-            role = MemberRole.USER
+            passwordEncoder = passwordEncoder
         )
 
         val savedMember = memberRepository.save(
             member = member
         )
 
-        return savedMember.id!!
+        return savedMember.email.value
     }
 
     @Transactional
     suspend fun login(
         command: LoginCommand
     ): TokenResult {
-        val member = memberRepository.findByEmail(command.email)
-            ?: throw BusinessException(ErrorCode.MEMBER_WRONG_CREDENTIAL)
+        val member = memberRepository.findByEmail(
+            email = Email.of(command.email)
+        ) ?: throw BusinessException(ErrorCode.MEMBER_WRONG_CREDENTIAL)
 
-        if (!passwordEncoder.matches(command.password, member.password)) {
+        if (!member.isPasswordMatch(command.password, passwordEncoder)) {
             throw BusinessException(ErrorCode.MEMBER_WRONG_CREDENTIAL)
         }
 
         return tokenService.issueToken(
-            subject = member.id!!.toString(),
+            subject = member.email.value,
             roles = listOf(member.role.name)
         )
     }

@@ -24,12 +24,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
+    implementation("org.postgresql:r2dbc-postgresql:1.0.7.RELEASE")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-logging")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    implementation("org.flywaydb:flyway-core")
+    runtimeOnly("org.postgresql:postgresql:42.7.4")
 
     implementation("io.r2dbc:r2dbc-h2")
     runtimeOnly("com.h2database:h2")
