@@ -1,7 +1,7 @@
-package com.chpark.restaurant.reservation.domain.reservation.port
+package com.chpark.restaurant.reservation.domain.port
 
+import com.chpark.restaurant.reservation.domain.Reservation
 import com.chpark.restaurant.reservation.domain.TimeSlot
-import com.chpark.restaurant.reservation.domain.reservation.Reservation
 
 interface ReservationRepository {
 

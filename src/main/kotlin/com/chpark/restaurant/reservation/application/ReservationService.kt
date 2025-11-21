@@ -4,9 +4,9 @@ import com.chpark.restaurant.reservation.application.dto.CreateReservationComman
 import com.chpark.restaurant.common.exception.BusinessException
 import com.chpark.restaurant.common.exception.ErrorCode
 import com.chpark.restaurant.reservation.domain.TimeSlot
-import com.chpark.restaurant.reservation.domain.reservation.Reservation
-import com.chpark.restaurant.reservation.domain.reservation.ReservationStatus
-import com.chpark.restaurant.reservation.domain.reservation.port.ReservationRepository
+import com.chpark.restaurant.reservation.domain.Reservation
+import com.chpark.restaurant.reservation.domain.ReservationStatus
+import com.chpark.restaurant.reservation.domain.port.ReservationRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

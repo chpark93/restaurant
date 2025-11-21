@@ -4,23 +4,23 @@ server:
 spring:
   application:
     name: restaurant-service
-
   r2dbc:
     url: r2dbc:h2:ch:///restaurant;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
-
   h2:
     console:
       enabled: true
       path: /h2-console
-
+  data:
+    redis:
+      host: localhost
+      port: 6379
   sql:
     init:
       mode: always
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
-
   main:
     web-application-type: reactive
 
@@ -33,6 +33,12 @@ management:
     health:
       show-details: always
 
+app:
+  jwt:
+    secret: "ZmFrZV9zZWNyZXRfc2VjcmV0X2tleV9mb3JfY2RyaV9wcm9qZWN0XzEyMzQ1Njc4OTA="
+    issuer: "ch-project"
+    access-token-ttl: 1800
+    refresh-token-ttl: 604800
 
 logging:
   level:

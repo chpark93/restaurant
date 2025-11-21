@@ -1,4 +1,4 @@
-package com.chpark.restaurant.reservation.domain.reservation
+package com.chpark.restaurant.reservation.domain
 
 enum class ReservationStatus {
     REQUESTED,

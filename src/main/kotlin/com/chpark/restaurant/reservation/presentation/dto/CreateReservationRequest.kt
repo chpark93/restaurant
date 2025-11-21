@@ -1,8 +1,8 @@
-package com.chpark.restaurant.presentation.reservation.dto
+package com.chpark.restaurant.reservation.presentation.dto
 
 import com.chpark.restaurant.reservation.application.dto.CreateReservationCommand
-import com.chpark.restaurant.reservation.domain.reservation.Reservation
-import com.chpark.restaurant.reservation.domain.reservation.ReservationStatus
+import com.chpark.restaurant.reservation.domain.Reservation
+import com.chpark.restaurant.reservation.domain.ReservationStatus
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull

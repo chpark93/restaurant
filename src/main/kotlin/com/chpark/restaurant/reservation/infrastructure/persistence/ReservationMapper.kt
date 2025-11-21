@@ -1,7 +1,7 @@
 package com.chpark.restaurant.reservation.infrastructure.persistence
 
 import com.chpark.restaurant.reservation.domain.TimeSlot
-import com.chpark.restaurant.reservation.domain.reservation.Reservation
+import com.chpark.restaurant.reservation.domain.Reservation
 
 fun ReservationEntity.toDomain(): Reservation = Reservation(
     id = id,

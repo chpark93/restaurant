@@ -1,6 +1,4 @@
-package com.chpark.restaurant.reservation.domain.reservation
-
-import com.chpark.restaurant.reservation.domain.TimeSlot
+package com.chpark.restaurant.reservation.domain
 
 data class Reservation(
     val id: Long? = null,

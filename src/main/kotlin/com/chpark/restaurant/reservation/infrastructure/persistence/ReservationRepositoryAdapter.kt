@@ -1,9 +1,9 @@
 package com.chpark.restaurant.reservation.infrastructure.persistence
 
 import com.chpark.restaurant.reservation.domain.TimeSlot
-import com.chpark.restaurant.reservation.domain.reservation.Reservation
-import com.chpark.restaurant.reservation.domain.reservation.ReservationStatus
-import com.chpark.restaurant.reservation.domain.reservation.port.ReservationRepository
+import com.chpark.restaurant.reservation.domain.Reservation
+import com.chpark.restaurant.reservation.domain.ReservationStatus
+import com.chpark.restaurant.reservation.domain.port.ReservationRepository
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
