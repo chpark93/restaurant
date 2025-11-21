@@ -20,21 +20,20 @@ class GlobalExceptionHandler(
     private val objectMapper: ObjectMapper
 ) : WebExceptionHandler {
 
-    private val log = LoggerFactory.getLogger(javaClass)
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun handle(
         exchange: ServerWebExchange,
         exception: Throwable
     ): Mono<Void> {
         val response = exchange.response
-
         if (response.isCommitted) {
             return Mono.error(exception)
         }
 
         val (status, code, message) = when (exception) {
             is BusinessException -> {
-                log.warn("Business Exception: {}", exception.message)
+                logger.warn("business exception: {}", exception.message)
                 Triple(
                     exception.errorCode.httpStatus,
                     exception.errorCode.code,
@@ -45,8 +44,8 @@ class GlobalExceptionHandler(
             is WebExchangeBindException -> {
                 val firstError = exception.fieldErrors.firstOrNull()
                 val message = firstError?.defaultMessage ?: ErrorCode.COMMON_INVALID.message
-                log.warn("Web Exchange Bind Exception: {}", message)
 
+                logger.warn("web exchange bind exception: {}", message)
                 Triple(
                     HttpStatus.BAD_REQUEST,
                     ErrorCode.COMMON_INVALID.code,
@@ -55,7 +54,7 @@ class GlobalExceptionHandler(
             }
 
             is ServerWebInputException -> {
-                log.warn("Server Web Input Exception: {}", exception.message)
+                logger.warn("server web input exception: {}", exception.message)
                 Triple(
                     HttpStatus.BAD_REQUEST,
                     ErrorCode.COMMON_INVALID.code,
@@ -64,7 +63,7 @@ class GlobalExceptionHandler(
             }
 
             is ResponseStatusException -> {
-                log.warn("Response Status Exception: {}", exception.message)
+                logger.warn("response status exception: {}", exception.message)
                 Triple(
                     exception.statusCode,
                     ErrorCode.COMMON_INVALID.code,
@@ -73,7 +72,7 @@ class GlobalExceptionHandler(
             }
 
             else -> {
-                log.error("Unexpected Exception", exception)
+                logger.error("unexpected exception", exception)
                 Triple(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     ErrorCode.COMMON_INTERNAL_ERROR.code,

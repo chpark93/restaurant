@@ -8,6 +8,7 @@ import com.chpark.restaurant.auth.domain.port.RefreshTokenStore
 import com.chpark.restaurant.auth.domain.port.TokenBlacklistStore
 import com.chpark.restaurant.common.exception.BusinessException
 import com.chpark.restaurant.common.exception.ErrorCode
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -18,6 +19,8 @@ class TokenService(
     private val refreshTokenStore: RefreshTokenStore,
     private val tokenBlacklistStore: TokenBlacklistStore
 ) {
+
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
     suspend fun issueToken(
@@ -94,22 +97,32 @@ class TokenService(
 
     @Transactional
     suspend fun logout(
-        accessToken: String,
+        accessToken: String?,
         refreshToken: String?
     ) {
-        tokenBlacklistStore.blacklist(
-            accessToken = accessToken
-        )
+        if (!accessToken.isNullOrBlank()) {
+            runCatching {
+                tokenBlacklistStore.blacklist(
+                    accessToken = accessToken
+                )
+            }.onFailure {
+                logger.warn("failed to blacklist access token", it)
+            }
+        }
 
         if (!refreshToken.isNullOrBlank()) {
-            val claims = tokenParser.parse(
-                token = refreshToken
-            )
+            runCatching {
+                val claims = tokenParser.parse(
+                    token = refreshToken
+                )
 
-            refreshTokenStore.delete(
-                userId = claims.subject,
-                refreshToken = refreshToken
-            )
+                refreshTokenStore.delete(
+                    userId = claims.subject,
+                    refreshToken = refreshToken
+                )
+            }.onFailure {
+                logger.warn("failed to delete refresh token", it)
+            }
         }
     }
 }

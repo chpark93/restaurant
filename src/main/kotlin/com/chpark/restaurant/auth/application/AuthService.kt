@@ -71,7 +71,7 @@ class AuthService(
 
     @Transactional
     suspend fun logout(
-        accessToken: String,
+        accessToken: String?,
         refreshToken: String?
     ) {
         tokenService.logout(

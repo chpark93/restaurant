@@ -12,12 +12,12 @@ import java.util.*
 @Configuration
 class WebFluxConfig {
 
-    private val log = LoggerFactory.getLogger(WebFluxConfig::class.java)
+    private val logger = LoggerFactory.getLogger(WebFluxConfig::class.java)
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration().apply {
-            allowedOrigins = listOf("http://localhost:3000", "http://localhost:8080")
+            allowedOrigins = listOf("http://localhost:3000", "http://localhost:8081")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf("*")
             allowCredentials = true
@@ -41,7 +41,7 @@ class WebFluxConfig {
             )
             .build()
 
-        log.info(
+        logger.info(
             "[{}] {} {}",
             correlationId,
             request.method,
@@ -50,10 +50,10 @@ class WebFluxConfig {
 
         chain.filter(mutatedExchange)
             .doOnSuccess {
-                log.info("[{}] response committed", correlationId)
+                logger.info("[{}] response committed", correlationId)
             }
             .doOnError { ex ->
-                log.error("[{}] response error", correlationId, ex)
+                logger.error("[{}] response error", correlationId, ex)
             }
     }
 }

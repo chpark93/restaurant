@@ -4,7 +4,6 @@ import com.chpark.restaurant.auth.domain.port.AuthTokenParser
 import com.chpark.restaurant.auth.domain.port.TokenBlacklistStore
 import com.chpark.restaurant.common.exception.BusinessException
 import com.chpark.restaurant.common.exception.ErrorCode
-import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.reactor.mono
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -19,17 +18,21 @@ import reactor.core.publisher.Mono
 @Component
 class JwtAuthenticationWebFilter(
     private val tokenParser: AuthTokenParser,
-    private val tokenBlacklistStore: TokenBlacklistStore,
-    private val objectMapper: ObjectMapper
+    private val tokenBlacklistStore: TokenBlacklistStore
 ) : WebFilter {
 
-    private val publicPrefixes = listOf(
-        "/v3/api-docs/**",
-        "/swagger-ui/**",
-        "/swagger-ui.html",
-        "/api/auth/register",
-        "/api/auth/login"
-    )
+    companion object {
+        private const val ROLE_PREFIX = "ROLE_"
+        private const val AUTHORIZATION_HEADER = "Authorization"
+        private const val BEARER_PREFIX = "Bearer "
+        private val publicPrefixes = listOf(
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/api/auth/register",
+            "/api/auth/login"
+        )
+    }
 
     override fun filter(
         exchange: ServerWebExchange,
@@ -55,7 +58,7 @@ class JwtAuthenticationWebFilter(
             )
         }.flatMap { claims ->
             val authorities = claims.roles.map {
-                SimpleGrantedAuthority("ROLE_$it")
+                SimpleGrantedAuthority("$ROLE_PREFIX$it")
             }
             val auth = UsernamePasswordAuthenticationToken(
                 claims.subject,
@@ -75,10 +78,10 @@ class JwtAuthenticationWebFilter(
     private fun resolveToken(
         exchange: ServerWebExchange
     ): String? {
-        val bearer = exchange.request.headers.getFirst("Authorization") ?: return null
-        if (!bearer.startsWith("Bearer ", ignoreCase = true)) return null
+        val bearer = exchange.request.headers.getFirst(AUTHORIZATION_HEADER) ?: return null
+        if (!bearer.startsWith(prefix = BEARER_PREFIX, ignoreCase = true)) return null
 
-        return bearer.substring("Bearer ".length).trim()
+        return bearer.substring(startIndex = BEARER_PREFIX.length).trim()
     }
 
     private fun isPublicPath(
