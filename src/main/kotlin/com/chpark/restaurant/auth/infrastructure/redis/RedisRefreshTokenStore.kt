@@ -1,6 +1,8 @@
 package com.chpark.restaurant.auth.infrastructure.redis
 
 import com.chpark.restaurant.auth.domain.port.RefreshTokenStore
+import com.chpark.restaurant.common.exception.BusinessException
+import com.chpark.restaurant.common.exception.ErrorCode
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate
 import org.springframework.stereotype.Component
@@ -53,6 +55,8 @@ class RedisRefreshTokenStore(
 
             if (storedToken == refreshToken) {
                 redisTemplate.delete(key).awaitFirstOrNull()
+            } else {
+                throw BusinessException(ErrorCode.INVALID_REFRESH_TOKEN)
             }
 
         } else {
