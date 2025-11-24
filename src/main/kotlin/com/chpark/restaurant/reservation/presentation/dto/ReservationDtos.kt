@@ -12,8 +12,6 @@ object ReservationDtos {
     data class CreateReservationRequest(
         @field:NotBlank
         val resourceId: String,
-        @field:NotBlank
-        val userId: String,
         @field:Min(1)
         val partySize: Int,
         @field:NotNull
@@ -21,7 +19,9 @@ object ReservationDtos {
         @field:NotNull
         val endAt: Instant
     ) {
-        fun toCommand(): CreateReservationCommand = CreateReservationCommand(
+        fun toCommand(
+            userId: String
+        ): CreateReservationCommand = CreateReservationCommand(
             resourceId = resourceId,
             userId = userId,
             partySize = partySize,
@@ -48,11 +48,15 @@ object ReservationDtos {
                 resourceId = reservation.resourceId,
                 userId = reservation.userId,
                 partySize = reservation.partySize,
-                status = reservation.status,
+                status = reservation.status(),
                 startAt = reservation.timeSlot.start,
                 endAt = reservation.timeSlot.end,
                 waitingNumber = reservation.waitingNumber
             )
         }
     }
+
+    data class ReservationIdResponse(
+        val id: Long
+    )
 }

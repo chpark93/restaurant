@@ -1,9 +1,13 @@
 package com.chpark.restaurant.reservation.presentation
 
-import com.chpark.restaurant.reservation.application.ReservationService
-import com.chpark.restaurant.reservation.application.dto.CreateReservationCommand
+import com.chpark.restaurant.common.exception.BusinessException
+import com.chpark.restaurant.common.exception.ErrorCode
 import com.chpark.restaurant.common.response.ApiResponse
+import com.chpark.restaurant.reservation.application.ReservationService
+import com.chpark.restaurant.reservation.presentation.dto.ReservationDtos
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.http.MediaType
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -18,18 +22,25 @@ class ReservationHandler(
     suspend fun createReservation(
         request: ServerRequest
     ): ServerResponse {
-        val command: CreateReservationCommand = request.awaitBody()
+        val userId = extractUserId(
+            request = request
+        )
+        val body = request.awaitBody<ReservationDtos.CreateReservationRequest>()
+        val command = body.toCommand(
+            userId = userId
+        )
 
-        val reservation = reservationService.createReservation(
+        val reservationId = reservationService.createReservation(
             command = command
         )
 
-        return ServerResponse
-            .ok()
+        return ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(
                 body = ApiResponse.ok(
-                    data = reservation
+                    data = ReservationDtos.ReservationIdResponse(
+                        id = reservationId
+                    )
                 )
             )
     }
@@ -43,12 +54,15 @@ class ReservationHandler(
             id = id
         )
 
-        return ServerResponse
-            .ok()
+        return ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(
                 body = ApiResponse.ok(
-                    data = reservation
+                    data = reservation.let {
+                        ReservationDtos.ReservationResponse.from(
+                            reservation = it
+                        )
+                    }
                 )
             )
     }
@@ -57,20 +71,29 @@ class ReservationHandler(
         request: ServerRequest
     ): ServerResponse {
         val id = request.pathVariable("id").toLong()
-        val userId = request.queryParam("userId").orElseThrow {
-            TODO("add authentication and get userId")
-        }
+        val userId = extractUserId(
+            request = request
+        )
 
         reservationService.cancelReservation(
             id = id,
             userId = userId
         )
 
-        return ServerResponse
-            .ok()
+        return ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValueAndAwait(
                 body = ApiResponse.ok()
             )
+    }
+
+    private suspend fun extractUserId(
+        request: ServerRequest
+    ): String {
+        val principal = request.principal().awaitSingle()
+        val authentication = principal as? Authentication
+            ?: throw BusinessException(ErrorCode.UNAUTHORIZED)
+
+        return authentication.name
     }
 }

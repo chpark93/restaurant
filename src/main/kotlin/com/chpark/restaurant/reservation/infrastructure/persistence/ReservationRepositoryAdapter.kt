@@ -1,8 +1,8 @@
 package com.chpark.restaurant.reservation.infrastructure.persistence
 
-import com.chpark.restaurant.reservation.domain.TimeSlot
 import com.chpark.restaurant.reservation.domain.Reservation
 import com.chpark.restaurant.reservation.domain.ReservationStatus
+import com.chpark.restaurant.reservation.domain.TimeSlot
 import com.chpark.restaurant.reservation.domain.port.ReservationRepository
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -17,22 +17,30 @@ class ReservationRepositoryAdapter(
     override suspend fun save(
         reservation: Reservation
     ): Reservation {
-        val saved = reservationR2dbcRepository.save(
-            entity = reservation.toEntity()
+        val savedReservation = reservationR2dbcRepository.save(
+            ReservationMapper.toEntity(
+                domain = reservation
+            )
         )
 
-        return saved.toDomain()
+        return ReservationMapper.toDomain(
+            entity = savedReservation
+        )
     }
 
     override suspend fun findById(
         id: Long
     ): Reservation? = reservationR2dbcRepository.findById(
         id = id
-    )?.toDomain()
+    )?.let { entity ->
+        ReservationMapper.toDomain(
+            entity = entity
+        )
+    }
 
     override suspend fun findOverlapping(
         resourceId: String,
-        slot: TimeSlot
+        timeSlot: TimeSlot
     ): List<Reservation> {
         val activeStatuses = listOf(
             ReservationStatus.REQUESTED,
@@ -41,15 +49,37 @@ class ReservationRepositoryAdapter(
             ReservationStatus.SEATED
         )
 
-        return reservationR2dbcRepository.findAllByResourceIdAndStatusIn(
+        return reservationR2dbcRepository.findAllByResourceIdAndStartAtLessThanAndEndAtGreaterThanAndStatusIn(
             resourceId = resourceId,
+            endAt = timeSlot.end,
+            startAt = timeSlot.start,
             statuses = activeStatuses
-        ).map {
-            it.toDomain()
+        ).map { entity ->
+            ReservationMapper.toDomain(
+                entity = entity
+            )
         }.filter { existing ->
             existing.timeSlot.overlaps(
-                timeSlot = slot
+                timeSlot = timeSlot
             )
         }.toList()
+    }
+
+    override suspend fun findNextWaiting(
+        resourceId: String,
+        timeSlot: TimeSlot
+    ): Reservation? {
+        reservationR2dbcRepository.findFirstByResourceIdAndStartAtLessThanAndEndAtGreaterThanAndStatusOrderByWaitingNumberAsc(
+            resourceId = resourceId,
+            endAt = timeSlot.end,
+            startAt = timeSlot.start,
+            status = ReservationStatus.WAITING
+        ).let { reservation ->
+            return reservation?.let {
+                ReservationMapper.toDomain(
+                    entity = it
+                )
+            }
+        }
     }
 }

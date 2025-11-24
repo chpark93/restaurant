@@ -17,4 +17,9 @@ interface ReservationRepository {
         resourceId: String,
         timeSlot: TimeSlot
     ): List<Reservation>
+
+    suspend fun findNextWaiting(
+        resourceId: String,
+        timeSlot: TimeSlot
+    ): Reservation?
 }

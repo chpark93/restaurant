@@ -1,10 +1,8 @@
 package com.chpark.restaurant.member.domain
 
-import org.springframework.data.relational.core.mapping.Table
 import org.springframework.security.crypto.password.PasswordEncoder
 
 
-@Table("members")
 class Member private constructor(
     val id: Long? = null,
     val email: Email,

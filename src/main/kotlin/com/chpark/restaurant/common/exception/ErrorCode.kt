@@ -23,10 +23,16 @@ enum class ErrorCode(
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "A008", "인증이 필요합니다."),
 
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "예약 정보를 찾을 수 없습니다."),
-    RESERVATION_ALREADY_CANCELLED(HttpStatus.CONFLICT, "R002", "이미 취소된 예약입니다."),
-    RESERVATION_ACCESS_DENIED(HttpStatus.FORBIDDEN, "R003", "해당 예약에 대한 권한이 없습니다."),
-    RESERVATION_TIME_SLOT_UNAVAILABLE(HttpStatus.CONFLICT, "R004", "선택한 시간대에 예약할 수 없습니다."),
+    RESERVATION_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "R002", "이미 취소된 예약입니다."),
+    RESERVATION_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "R003", "해당 예약에 대한 권한이 없습니다."),
+    RESERVATION_TIME_SLOT_UNAVAILABLE(HttpStatus.BAD_REQUEST, "R004", "선택한 시간대에 예약할 수 없습니다."),
     RESERVATION_INVALID_TIME_SLOT(HttpStatus.BAD_REQUEST, "R005", "잘못된 시간대입니다."),
+    RESERVATION_EXCEEDS_CAPACITY(HttpStatus.BAD_REQUEST, "R006", "예약 인원이 예약 대상의 수용 인원을 초과합니다."),
+    RESERVATION_ONLY_WAITING_CAN_BE_CONFIRMED(HttpStatus.BAD_REQUEST, "R007", "대기 중인 예약만 확정할 수 있습니다."),
+
+    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "RS001", "예약대상 정보를 찾을 수 없습니다."),
+    RESOURCE_INACTIVE(HttpStatus.CONFLICT, "RS002", "비활성화된 예약대상입니다."),
+    RESOURCE_CODE_DUPLICATED(HttpStatus.CONFLICT, "RS003", "이미 사용 중인 예약대상 코드입니다."),
 
     COMMON_INVALID(HttpStatus.BAD_REQUEST, "C001", "잘못된 요청입니다."),
     COMMON_NOT_FOUND(HttpStatus.NOT_FOUND, "C002", "리소스를 찾을 수 없습니다."),

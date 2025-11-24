@@ -1,28 +1,35 @@
 package com.chpark.restaurant.reservation.infrastructure.persistence
 
-import com.chpark.restaurant.reservation.domain.TimeSlot
 import com.chpark.restaurant.reservation.domain.Reservation
+import com.chpark.restaurant.reservation.domain.TimeSlot
 
-fun ReservationEntity.toDomain(): Reservation = Reservation(
-    id = id,
-    resourceId = resourceId,
-    userId = userId,
-    partySize = partySize,
-    timeSlot = TimeSlot(
-        start = startAt,
-        end = endAt
-    ),
-    status = status,
-    waitingNumber = waitingNumber
-)
+object ReservationMapper {
 
-fun Reservation.toEntity(): ReservationEntity = ReservationEntity(
-    id = id,
-    resourceId = resourceId,
-    userId = userId,
-    partySize = partySize,
-    status = status,
-    startAt = timeSlot.start,
-    endAt = timeSlot.end,
-    waitingNumber = waitingNumber
-)
+    fun toEntity(
+        domain: Reservation,
+    ): ReservationEntity = ReservationEntity(
+        id = domain.id,
+        resourceId = domain.resourceId,
+        userId = domain.userId,
+        partySize = domain.partySize,
+        status = domain.status(),
+        startAt = domain.timeSlot.start,
+        endAt = domain.timeSlot.end,
+        waitingNumber = domain.waitingNumber
+    )
+
+    fun toDomain(
+        entity: ReservationEntity,
+    ): Reservation = Reservation.reConstruct(
+        id = entity.id,
+        resourceId = entity.resourceId,
+        userId = entity.userId,
+        partySize = entity.partySize,
+        timeSlot = TimeSlot(
+            start = entity.startAt,
+            end = entity.endAt
+        ),
+        status = entity.status,
+        waitingNumber = entity.waitingNumber
+    )
+}
