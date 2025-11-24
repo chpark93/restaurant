@@ -2,10 +2,8 @@ package com.chpark.restaurant.reservation.application.dto
 
 import java.time.Instant
 
-data class CreateReservationCommand(
+data class ResourceCapacityQuery(
     val resourceId: Long,
-    val userId: String,
-    val partySize: Int,
     val startAt: Instant,
     val endAt: Instant
 )

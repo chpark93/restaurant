@@ -14,12 +14,17 @@ interface ReservationRepository {
     ): Reservation?
 
     suspend fun findOverlapping(
-        resourceId: String,
+        resourceId: Long,
         timeSlot: TimeSlot
     ): List<Reservation>
 
     suspend fun findNextWaiting(
-        resourceId: String,
+        resourceId: Long,
         timeSlot: TimeSlot
     ): Reservation?
+
+    suspend fun countActiveOverlapping(
+        resourceId: Long,
+        timeSlot: TimeSlot
+    ): Long
 }

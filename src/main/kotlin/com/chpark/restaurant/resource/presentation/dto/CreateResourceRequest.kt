@@ -6,6 +6,7 @@ import com.chpark.restaurant.resource.domain.ResourceType
 
 object ResourceDtos {
     data class CreateResourceRequest(
+        val storeId: Long,
         val code: String,
         val name: String,
         val capacity: Int,
@@ -23,6 +24,7 @@ object ResourceDtos {
 
     fun CreateResourceRequest.toCommand(): CreateResourceCommand =
         CreateResourceCommand(
+            storeId = storeId,
             code = code,
             name = name,
             capacity = capacity,

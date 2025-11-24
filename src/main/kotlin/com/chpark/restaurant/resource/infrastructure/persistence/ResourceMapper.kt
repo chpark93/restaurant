@@ -9,6 +9,7 @@ object ResourceMapper {
         domain: Resource
     ): ResourceEntity = ResourceEntity(
         id = domain.id,
+        storeId = domain.storeId,
         code = domain.code,
         name = domain.name,
         capacity = domain.capacity,
@@ -20,6 +21,7 @@ object ResourceMapper {
         entity: ResourceEntity
     ): Resource = Resource.reConstruct(
         id = entity.id,
+        storeId = entity.storeId,
         code = entity.code,
         name = entity.name,
         capacity = entity.capacity,

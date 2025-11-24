@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.awaitBody
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
+import java.time.Instant
 
 @Component
 class ResourceHandler(
@@ -47,6 +48,55 @@ class ResourceHandler(
             .bodyValueAndAwait(
                 body = ApiResponse.ok(
                     data = resource.toResponse()
+                )
+            )
+    }
+
+    suspend fun getResourcesByStore(
+        request: ServerRequest
+    ): ServerResponse {
+        val storeId = request.pathVariable("storeId").toLong()
+
+        val result = resourceService.getByStoreId(
+            storeId = storeId
+        ).map { resource ->
+            resource.toResponse()
+        }
+
+        return ServerResponse.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(
+                body = ApiResponse.ok(
+                    data = result
+                )
+            )
+    }
+
+    suspend fun getResourceCapacity(
+        request: ServerRequest
+    ): ServerResponse {
+        val resourceId = request.pathVariable("id").toLong()
+
+        val startAtParam = request.queryParam("startAt")
+            .orElseThrow { IllegalArgumentException("startAt query parameter is required") }
+
+        val endAtParam = request.queryParam("endAt")
+            .orElseThrow { IllegalArgumentException("endAt query parameter is required") }
+
+        val startAt = Instant.parse(startAtParam)
+        val endAt = Instant.parse(endAtParam)
+
+        val result = resourceService.getResourceCapacity(
+            resourceId = resourceId,
+            startAt = startAt,
+            endAt = endAt
+        )
+
+        return ServerResponse.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(
+                body = ApiResponse.ok(
+                    data = result
                 )
             )
     }

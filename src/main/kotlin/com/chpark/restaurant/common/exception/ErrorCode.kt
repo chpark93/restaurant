@@ -22,6 +22,14 @@ enum class ErrorCode(
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "A007", "유효하지 않은 리프레시 토큰입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "A008", "인증이 필요합니다."),
 
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "S001", "매장 정보를 찾을 수 없습니다."),
+    STORE_CODE_DUPLICATED(HttpStatus.CONFLICT, "S002", "이미 사용 중인 매장 코드입니다."),
+    STORE_INACTIVE(HttpStatus.CONFLICT, "S003", "비활성화된 매장입니다."),
+
+    STORE_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "SI001", "매장 상품 정보를 찾을 수 없습니다."),
+    STORE_ITEM_CODE_DUPLICATED(HttpStatus.BAD_REQUEST, "SI002", "이미 사용 중인 상품 코드입니다."),
+    STORE_ITEM_INACTIVE(HttpStatus.BAD_REQUEST, "SI003", "비활성화된 매장 상품입니다."),
+
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "예약 정보를 찾을 수 없습니다."),
     RESERVATION_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "R002", "이미 취소된 예약입니다."),
     RESERVATION_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "R003", "해당 예약에 대한 권한이 없습니다."),

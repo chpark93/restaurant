@@ -14,7 +14,7 @@ data class ReservationEntity(
     val id: Long? = null,
 
     @Column("resource_id")
-    val resourceId: String,
+    val resourceId: Long,
 
     @Column("user_id")
     val userId: String,

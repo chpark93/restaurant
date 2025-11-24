@@ -2,6 +2,7 @@ package com.chpark.restaurant.resource.domain
 
 class Resource private constructor(
     val id: Long? = null,
+    val storeId: Long,
     val code: String,
     val name: String,
     val capacity: Int,
@@ -11,16 +12,19 @@ class Resource private constructor(
 
     companion object {
         fun create(
+            storeId: Long,
             code: String,
             name: String,
             capacity: Int,
             type: ResourceType
         ): Resource {
+            require(storeId > 0) { "Resource must be associated with a store." }
             require(code.isNotBlank()) { "Resource code must not be blank." }
             require(name.isNotBlank()) { "Resource name must not be blank." }
             require(capacity > 0) { "Resource capacity must be greater than zero." }
 
             return Resource(
+                storeId = storeId,
                 code = code.trim(),
                 name = name.trim(),
                 capacity = capacity,
@@ -31,6 +35,7 @@ class Resource private constructor(
 
         fun reConstruct(
             id: Long?,
+            storeId: Long,
             code: String,
             name: String,
             capacity: Int,
@@ -38,6 +43,7 @@ class Resource private constructor(
             type: ResourceType
         ): Resource = Resource(
             id = id,
+            storeId = storeId,
             code = code,
             name = name,
             capacity = capacity,

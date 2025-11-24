@@ -1,11 +1,12 @@
-package com.chpark.restaurant.resource.infrastructure.persistence
+package com.chpark.restaurant.store.infrastructure.persistence
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.math.BigDecimal
 
-@Table("resources")
-data class ResourceEntity(
+@Table("store_items")
+data class StoreItemEntity(
     @Id
     val id: Long? = null,
 
@@ -18,12 +19,12 @@ data class ResourceEntity(
     @Column("name")
     val name: String,
 
-    @Column("capacity")
-    val capacity: Int,
+    @Column("description")
+    val description: String? = null,
 
-    @Column("active")
-    val active: Boolean,
+    @Column("price")
+    val price: BigDecimal? = null,
 
-    @Column("type")
-    val type: String
+    @Column("status")
+    val status: String
 )

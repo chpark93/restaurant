@@ -23,9 +23,38 @@ CREATE TABLE IF NOT EXISTS reservations (
 
 CREATE TABLE IF NOT EXISTS resources (
     id BIGSERIAL PRIMARY KEY,
+    store_id BIGINT NOT NULL REFERENCES stores(id),
     code VARCHAR(50) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
     capacity INT NOT NULL,
     active BOOLEAN NOT NULL DEFAULT TRUE,
-    type VARCHAR(20) NOT NULL
+    type VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uk_store_resource UNIQUE (store_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS stores (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    status VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS store_items (
+    id BIGSERIAL PRIMARY KEY,
+    store_id BIGINT NOT NULL REFERENCES stores(id),
+    code VARCHAR(50) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price NUMERIC(15, 2),
+    status VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uk_store_item UNIQUE (store_id, code)
 );

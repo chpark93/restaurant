@@ -3,6 +3,8 @@ package com.chpark.restaurant.reservation.application
 import com.chpark.restaurant.common.exception.BusinessException
 import com.chpark.restaurant.common.exception.ErrorCode
 import com.chpark.restaurant.reservation.application.dto.CreateReservationCommand
+import com.chpark.restaurant.reservation.application.dto.ResourceCapacityQuery
+import com.chpark.restaurant.reservation.application.dto.ResourceCapacityResult
 import com.chpark.restaurant.reservation.domain.Reservation
 import com.chpark.restaurant.reservation.domain.ReservationStatus
 import com.chpark.restaurant.reservation.domain.TimeSlot
@@ -26,8 +28,8 @@ class ReservationService(
             end = command.endAt
         )
 
-        val resource = resourceRepository.findByCode(
-            code = command.resourceId
+        val resource = resourceRepository.findById(
+            id = command.resourceId
         ) ?: throw BusinessException(ErrorCode.RESOURCE_NOT_FOUND)
 
         if (!resource.isActive()) {
@@ -113,5 +115,36 @@ class ReservationService(
                 reservation = nextWaiting
             )
         }
+    }
+
+    @Transactional(readOnly = true)
+    suspend fun getResourceCapacity(
+        query: ResourceCapacityQuery
+    ): ResourceCapacityResult {
+        val resource = resourceRepository.findById(query.resourceId)
+            ?: throw BusinessException(ErrorCode.RESOURCE_NOT_FOUND)
+
+        if (!resource.isActive()) {
+            throw BusinessException(ErrorCode.RESOURCE_INACTIVE)
+        }
+
+        val timeSlot = TimeSlot(
+            start = query.startAt,
+            end = query.endAt
+        )
+
+        val reservedCount = reservationRepository.countActiveOverlapping(
+            resourceId = query.resourceId,
+            timeSlot = timeSlot
+        )
+
+        val availableCapacity = (resource.capacity - reservedCount.toInt()).coerceAtLeast(0)
+
+        return ResourceCapacityResult(
+            resourceId = resource.id!!,
+            totalCapacity = resource.capacity,
+            reservedCount = reservedCount,
+            availableCapacity = availableCapacity
+        )
     }
 }

@@ -8,7 +8,9 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 @EnableR2dbcRepositories(
     basePackages = [
         "com.chpark.restaurant.member.infrastructure.persistence",
-        "com.chpark.restaurant.reservation.infrastructure.persistence"
+        "com.chpark.restaurant.reservation.infrastructure.persistence",
+        "com.chpark.restaurant.resource.infrastructure.persistence",
+        "com.chpark.restaurant.store.infrastructure.persistence"
     ]
 )
 @EnableR2dbcAuditing

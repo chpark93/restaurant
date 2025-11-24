@@ -5,7 +5,7 @@ import com.chpark.restaurant.common.exception.ErrorCode
 
 class Reservation private constructor(
     val id: Long? = null,
-    val resourceId: String,
+    val resourceId: Long,
     val userId: String,
     val partySize: Int,
     val timeSlot: TimeSlot,
@@ -14,7 +14,7 @@ class Reservation private constructor(
 ) {
     companion object {
         fun create(
-            resourceId: String,
+            resourceId: Long,
             userId: String,
             partySize: Int,
             timeSlot: TimeSlot,
@@ -31,7 +31,7 @@ class Reservation private constructor(
 
         fun reConstruct(
             id: Long?,
-            resourceId: String,
+            resourceId: Long,
             userId: String,
             partySize: Int,
             timeSlot: TimeSlot,

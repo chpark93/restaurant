@@ -14,6 +14,15 @@ class ReservationRepositoryAdapter(
     private val reservationR2dbcRepository: ReservationR2dbcRepository
 ) : ReservationRepository {
 
+    companion object {
+        private val ACTIVE_STATUSES = setOf(
+            ReservationStatus.REQUESTED,
+            ReservationStatus.CONFIRMED,
+            ReservationStatus.WAITING,
+            ReservationStatus.SEATED
+        )
+    }
+
     override suspend fun save(
         reservation: Reservation
     ): Reservation {
@@ -39,7 +48,7 @@ class ReservationRepositoryAdapter(
     }
 
     override suspend fun findOverlapping(
-        resourceId: String,
+        resourceId: Long,
         timeSlot: TimeSlot
     ): List<Reservation> {
         val activeStatuses = listOf(
@@ -66,7 +75,7 @@ class ReservationRepositoryAdapter(
     }
 
     override suspend fun findNextWaiting(
-        resourceId: String,
+        resourceId: Long,
         timeSlot: TimeSlot
     ): Reservation? {
         reservationR2dbcRepository.findFirstByResourceIdAndStartAtLessThanAndEndAtGreaterThanAndStatusOrderByWaitingNumberAsc(
@@ -82,4 +91,15 @@ class ReservationRepositoryAdapter(
             }
         }
     }
+
+    override suspend fun countActiveOverlapping(
+        resourceId: Long,
+        timeSlot: TimeSlot
+    ): Long = reservationR2dbcRepository.countByResourceIdAndStartAtLessThanAndEndAtGreaterThanAndStatusIn(
+        resourceId = resourceId,
+        statuses = ACTIVE_STATUSES,
+        end = timeSlot.end,
+        start = timeSlot.start
+    )
+
 }

@@ -11,7 +11,7 @@ import java.time.Instant
 object ReservationDtos {
     data class CreateReservationRequest(
         @field:NotBlank
-        val resourceId: String,
+        val resourceId: Long,
         @field:Min(1)
         val partySize: Int,
         @field:NotNull
@@ -32,7 +32,7 @@ object ReservationDtos {
 
     data class ReservationResponse(
         val id: Long?,
-        val resourceId: String,
+        val resourceId: Long,
         val userId: String,
         val partySize: Int,
         val status: ReservationStatus,
