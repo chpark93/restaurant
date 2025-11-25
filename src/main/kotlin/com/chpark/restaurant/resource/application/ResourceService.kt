@@ -6,11 +6,13 @@ import com.chpark.restaurant.reservation.domain.TimeSlot
 import com.chpark.restaurant.reservation.domain.port.ReservationRepository
 import com.chpark.restaurant.resource.application.dto.CreateResourceCommand
 import com.chpark.restaurant.resource.application.dto.ResourceCapacityResult
+import com.chpark.restaurant.resource.application.dto.ResourceSlotAvailability
 import com.chpark.restaurant.resource.domain.Resource
 import com.chpark.restaurant.resource.domain.port.ResourceRepository
 import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Duration
 import java.time.Instant
 
 @Service
@@ -84,5 +86,74 @@ class ResourceService(
             reservedCount = reservedCount,
             availableCapacity = available
         )
+    }
+
+    @Transactional(readOnly = true)
+    suspend fun getAvailableSlots(
+        resourceId: Long,
+        startAt: Instant,
+        endAt: Instant,
+        slotMinutes: Long,
+        minPartySize: Int?
+    ): List<ResourceSlotAvailability> {
+        if (!startAt.isBefore(endAt)) {
+            throw BusinessException(ErrorCode.RESOURCE_INVALID_TIME_SLOT)
+        }
+
+        val resource = resourceRepository.findById(
+            id = resourceId
+        ) ?: throw BusinessException(ErrorCode.RESOURCE_NOT_FOUND)
+
+        val slotStep = Duration.ofMinutes(slotMinutes)
+
+        val baseSlot = TimeSlot(
+            start = startAt,
+            end = endAt
+        )
+        val reservations = reservationRepository.findOverlapping(
+            resourceId = resource.id!!,
+            timeSlot = baseSlot
+        )
+
+        val timeSlots = mutableListOf<TimeSlot>()
+        var cursor = startAt
+        while (cursor.isBefore(endAt)) {
+            val next = cursor.plus(slotStep)
+            if (!next.isAfter(endAt)) {
+                timeSlots.add(TimeSlot(
+                    start = cursor,
+                    end = next
+                ))
+            } else {
+                break
+            }
+
+            cursor = next
+        }
+
+        return timeSlots.map { slot ->
+            val reservedCount = reservations.filter {
+                it.timeSlot.overlaps(
+                    timeSlot = slot
+                )
+            }.sumOf { it.partySize }
+
+            val available = (resource.capacity - reservedCount).coerceAtLeast(0)
+            val canReserve = if (minPartySize != null) {
+                available >= minPartySize
+            } else {
+                available > 0
+            }
+
+            ResourceSlotAvailability(
+                resourceId = resource.id,
+                startAt = slot.start,
+                endAt = slot.end,
+                capacity = resource.capacity,
+                reserved = reservedCount,
+                available = available,
+                canReserve = canReserve
+            )
+        }
     }
 }

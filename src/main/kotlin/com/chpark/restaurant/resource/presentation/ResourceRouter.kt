@@ -16,6 +16,9 @@ class ResourceRouter(
         "/api/resources".nest {
             POST("", resourceHandler::createResource)
             GET("/{code}", resourceHandler::getResource)
+            GET("/store/{storeId}", resourceHandler::getResourcesByStore)
+            GET("/{id}/capacity", resourceHandler::getResourceCapacity)
+            GET("/{id}/slots", resourceHandler::getResourceSlots)
         }
     }
 }

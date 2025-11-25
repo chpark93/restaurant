@@ -51,12 +51,7 @@ class ReservationRepositoryAdapter(
         resourceId: Long,
         timeSlot: TimeSlot
     ): List<Reservation> {
-        val activeStatuses = listOf(
-            ReservationStatus.REQUESTED,
-            ReservationStatus.CONFIRMED,
-            ReservationStatus.WAITING,
-            ReservationStatus.SEATED
-        )
+        val activeStatuses = activeStatuses()
 
         return reservationR2dbcRepository.findAllByResourceIdAndStartAtLessThanAndEndAtGreaterThanAndStatusIn(
             resourceId = resourceId,
@@ -102,4 +97,11 @@ class ReservationRepositoryAdapter(
         start = timeSlot.start
     )
 
+    private fun activeStatuses(): List<ReservationStatus> =
+        listOf(
+            ReservationStatus.REQUESTED,
+            ReservationStatus.CONFIRMED,
+            ReservationStatus.WAITING,
+            ReservationStatus.SEATED
+        )
 }

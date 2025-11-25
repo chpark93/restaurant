@@ -100,4 +100,44 @@ class ResourceHandler(
                 )
             )
     }
+
+    suspend fun getResourceSlots(
+        request: ServerRequest
+    ): ServerResponse {
+        val id = request.pathVariable("id")
+
+        val startAtParam = request.queryParam("startAt")
+            .orElseThrow { IllegalArgumentException("startAt query parameter is required") }
+
+        val endAtParam = request.queryParam("endAt")
+            .orElseThrow { IllegalArgumentException("endAt query parameter is required") }
+
+        val slotMinutesParam = request.queryParam("slotMinutes")
+            .orElse("30")
+
+        val minPartySizeParam = request.queryParam("minPartySize")
+            .orElse(null)
+
+        val resourceId = id.toLong()
+        val startAt = Instant.parse(startAtParam)
+        val endAt = Instant.parse(endAtParam)
+        val slotMinutes = slotMinutesParam.toLong()
+        val minPartySize = minPartySizeParam?.toInt()
+
+        val result = resourceService.getAvailableSlots(
+            resourceId = resourceId,
+            startAt = startAt,
+            endAt = endAt,
+            slotMinutes = slotMinutes,
+            minPartySize = minPartySize
+        )
+
+        return ServerResponse.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValueAndAwait(
+                body = ApiResponse.ok(
+                    data = result
+                )
+            )
+    }
 }

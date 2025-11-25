@@ -1,8 +1,13 @@
+import com.epages.restdocs.apispec.gradle.OpenApi3Extension
+
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.5.7"
     id("io.spring.dependency-management") version "1.1.7"
+
+    id("com.epages.restdocs-api-spec") version "0.19.4"
+    id("org.asciidoctor.jvm.convert") version "4.0.2"
 }
 
 group = "com.chpark"
@@ -24,7 +29,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
-    implementation("org.postgresql:r2dbc-postgresql:1.0.7.RELEASE")
+    implementation("org.postgresql:r2dbc-postgresql")
+    // implementation("org.postgresql:r2dbc-postgresql:1.0.7.RELEASE")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-logging")
 
@@ -33,25 +39,29 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation("org.flywaydb:flyway-core")
-    runtimeOnly("org.postgresql:postgresql:42.7.4")
+    runtimeOnly("org.postgresql:postgresql:42.7.7")
 
     implementation("io.r2dbc:r2dbc-h2")
     runtimeOnly("com.h2database:h2")
 
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.10")
 
     implementation("io.jsonwebtoken:jjwt-api:0.12.7")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.7")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.7")
 
     implementation("org.springframework.boot:spring-boot-starter-security")
-    testImplementation("org.springframework.security:spring-security-test")
 
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("io.projectreactor:reactor-test")
+
+    testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
+    testImplementation("org.springframework.restdocs:spring-restdocs-core")
+    testImplementation("com.epages:restdocs-api-spec:0.19.4")
+    testImplementation("com.epages:restdocs-api-spec-webtestclient:0.19.4")
 }
 
 kotlin {
@@ -62,4 +72,17 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    outputs.dir("build/generated-snippets")
+}
+
+configure<OpenApi3Extension> {
+    setServer("http://localhost:8081")
+    title = "Restaurant API"
+    description = "실시간 좌석/타임 슬롯 예약 + 웨이팅 시스템 API"
+    version = "0.1.0"
+    format = "yaml"
+}
+
+tasks.named("bootJar") {
+    dependsOn("openapi3")
 }

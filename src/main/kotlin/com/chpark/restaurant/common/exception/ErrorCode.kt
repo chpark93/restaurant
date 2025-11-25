@@ -41,6 +41,7 @@ enum class ErrorCode(
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "RS001", "예약대상 정보를 찾을 수 없습니다."),
     RESOURCE_INACTIVE(HttpStatus.CONFLICT, "RS002", "비활성화된 예약대상입니다."),
     RESOURCE_CODE_DUPLICATED(HttpStatus.CONFLICT, "RS003", "이미 사용 중인 예약대상 코드입니다."),
+    RESOURCE_INVALID_TIME_SLOT(HttpStatus.BAD_REQUEST, "RS004", "잘못된 예약대상 시간대입니다."),
 
     COMMON_INVALID(HttpStatus.BAD_REQUEST, "C001", "잘못된 요청입니다."),
     COMMON_NOT_FOUND(HttpStatus.NOT_FOUND, "C002", "리소스를 찾을 수 없습니다."),

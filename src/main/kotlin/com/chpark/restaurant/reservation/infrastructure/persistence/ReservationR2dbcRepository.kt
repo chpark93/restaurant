@@ -7,12 +7,12 @@ import java.time.Instant
 
 interface ReservationR2dbcRepository : CoroutineCrudRepository<ReservationEntity, Long> {
 
-    suspend fun findAllByResourceIdAndStatusIn(
+    fun findAllByResourceIdAndStatusIn(
         resourceId: Long,
         statuses: Collection<ReservationStatus>
     ): Flow<ReservationEntity>
 
-    suspend fun findAllByResourceIdAndStartAtLessThanAndEndAtGreaterThanAndStatusIn(
+    fun findAllByResourceIdAndStartAtLessThanAndEndAtGreaterThanAndStatusIn(
         resourceId: Long,
         endAt: Instant,
         startAt: Instant,
