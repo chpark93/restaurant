@@ -26,6 +26,7 @@ class JwtAuthenticationWebFilter(
         private const val AUTHORIZATION_HEADER = "Authorization"
         private const val BEARER_PREFIX = "Bearer "
         private val publicPrefixes = listOf(
+            "/docs/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",

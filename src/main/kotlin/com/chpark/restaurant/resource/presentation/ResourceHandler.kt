@@ -41,7 +41,9 @@ class ResourceHandler(
     ): ServerResponse {
         val code = request.pathVariable("code")
 
-        val resource = resourceService.getByCode(code)
+        val resource = resourceService.getByCode(
+            code = code
+        )
 
         return ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)

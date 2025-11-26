@@ -1,0 +1,57 @@
+= Restaurant API 문서
+:toc: left
+:toclevels: 3
+:sectnums:
+
+== 소개
+
+이 문서는 Restaurant 서비스의 REST API를 설명합니다.
+
+== Auth API
+
+=== 회원가입 (Register)
+
+==== 요청
+include::{snippets}/auth-register/http-request.adoc[]
+==== 요청 필드
+include::{snippets}/auth-register/request-body.adoc[]
+==== 응답
+include::{snippets}/auth-register/http-response.adoc[]
+==== 응답 필드
+include::{snippets}/auth-register/response-body.adoc[]
+
+
+=== 로그인 (Login)
+
+==== 요청
+include::{snippets}/auth-login/http-request.adoc[]
+==== 요청 필드
+include::{snippets}/auth-login/request-body.adoc[]
+==== 응답
+include::{snippets}/auth-login/http-response.adoc[]
+==== 응답 필드
+include::{snippets}/auth-login/response-body.adoc[]
+
+
+=== 토큰 재발급 (Reissue)
+
+==== 요청
+include::{snippets}/auth-reissue/http-request.adoc[]
+==== 요청 필드
+include::{snippets}/auth-reissue/request-body.adoc[]
+==== 응답
+include::{snippets}/auth-reissue/http-response.adoc[]
+==== 응답 필드
+include::{snippets}/auth-reissue/response-body.adoc[]
+
+
+=== 로그아웃 (Logout)
+
+==== 요청
+include::{snippets}/auth-logout/http-request.adoc[]
+==== 요청 필드
+include::{snippets}/auth-logout/request-body.adoc[]
+==== 응답
+include::{snippets}/auth-logout/http-response.adoc[]
+==== 응답 필드
+include::{snippets}/auth-logout/response-body.adoc[]

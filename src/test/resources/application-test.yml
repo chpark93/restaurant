@@ -1,0 +1,4 @@
+jwt:
+  secret: dGhpc19pbl90ZXN0X2p3dF9zZWNyZXRfa2V5XzMyYnl0ZXM=
+  access-token-expiration: 3600
+  refresh-token-expiration: 86400

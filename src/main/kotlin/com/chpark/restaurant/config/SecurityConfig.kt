@@ -40,6 +40,7 @@ class SecurityConfig(
             }
             .authorizeExchange { authorizeExchangeSpec ->
                 authorizeExchangeSpec.pathMatchers(
+                    "/docs/**",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",

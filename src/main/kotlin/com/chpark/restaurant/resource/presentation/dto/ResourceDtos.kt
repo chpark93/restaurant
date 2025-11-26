@@ -17,6 +17,7 @@ object ResourceDtos {
         val id: Long,
         val code: String,
         val name: String,
+        val storeId: Long,
         val capacity: Int,
         val active: Boolean,
         val type: ResourceType
@@ -36,6 +37,7 @@ object ResourceDtos {
             id = requireNotNull(id),
             code = code,
             name = name,
+            storeId = storeId,
             capacity = capacity,
             active = isActive(),
             type = type

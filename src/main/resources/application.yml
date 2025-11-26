@@ -58,3 +58,8 @@ logging:
     org.springframework.r2dbc: DEBUG
     org.springframework.data.r2dbc: DEBUG
     org.springframework.security: INFO
+
+springdoc:
+  swagger-ui:
+    url: /docs/openapi3.json
+    path: /swagger-ui.html
